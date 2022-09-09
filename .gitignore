@@ -1,0 +1,8 @@
+/**/*.deps
+/**/*.o
+gmon.out
+ldasm
+out
+
+vgcore.*
+callgrind.*
