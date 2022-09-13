@@ -59,32 +59,23 @@ int main(int argc, char** argv) {
 	char* path = NULL;
 	lstr_t disasm_sym_name = NLSTR();
 
-	for (usz i = 1; i < argc; ++i) {
-		if (argv[i][0] != '-') {
-			if (path)
-				lt_ferrf("too many input files provided\n");
-			path = argv[i];
-			continue;
-		}
-
-		lstr_t arg = LSTR(argv[i], strlen(argv[i]));
-		if (lt_lstr_eq(arg, CLSTR("-h")) || lt_lstr_eq(arg, CLSTR("--help"))) {
+	lt_arg_iterator_t arg_it = lt_arg_iterator_create(argc, argv);
+	while (lt_arg_next(&arg_it)) {
+		if (lt_arg_flag(&arg_it, 'h', CLSTR("help"))) {
 			lt_printf(
-				"usage: ldasm [OPTIONS] file\n"
+				"usage: ldasm [OPTIONS] FILE\n"
 				"options:\n"
 				"  -h, --help           Display this information.\n"
 				"  -s, --symbol SYMBOL  Disassemble only a specific symbol.\n"
 			);
 			return 0;
 		}
-		if (lt_lstr_eq(arg, CLSTR("-s")) || lt_lstr_eq(arg, CLSTR("--symbol"))) {
-			if (++i >= argc)
-				lt_ferrf("missing argument to '%S'\n", arg);
-			disasm_sym_name = LSTR(argv[i], strlen(argv[i]));
+		if (lt_arg_str(&arg_it, 's', CLSTR("symbol"), &disasm_sym_name.str)) {
+			disasm_sym_name.len = strlen(disasm_sym_name.str);
 			continue;
 		}
 
-		lt_ferrf("unrecognized option '%S'\n", arg);
+		path = *arg_it.it;
 	}
 
 	if (!path)
