@@ -75,6 +75,8 @@ int main(int argc, char** argv) {
 			continue;
 		}
 
+		if (path)
+			lt_ferrf("too many input files provided\n");
 		path = *arg_it.it;
 	}
 
