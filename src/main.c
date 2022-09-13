@@ -66,7 +66,7 @@ int main(int argc, char** argv) {
 				"usage: ldasm [OPTIONS] FILE\n"
 				"options:\n"
 				"  -h, --help           Display this information.\n"
-				"  -s, --symbol SYMBOL  Disassemble only a specific symbol.\n"
+				"  -s, --symbol=SYMBOL  Disassemble only a specific symbol.\n"
 			);
 			return 0;
 		}
