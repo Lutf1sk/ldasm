@@ -9,7 +9,7 @@
 void disasm(void* data, usz len) {
 	u8 str[256];
 	u8* str_it = str;
-	lt_instr_stream_t s = lt_instr_stream_create(data, len, (lt_io_callback_t)lt_str_io_callb, &str_it);
+	lt_instr_stream_t s = lt_instr_stream_create((lt_io_callback_t)lt_str_io_callb, &str_it, data, len);
 	for (;;) {
 		usz offs = s.it - (u8*)data;
 		usz len = lt_x64_disasm_instr(&s);
@@ -56,7 +56,7 @@ int main(int argc, char** argv) {
 	lt_arena_t* arena = lt_amcreate(NULL, LT_GB(1), 0);
 	lt_alloc_t* alloc = (lt_alloc_t*)arena;
 
-	char* path = NULL;
+	lstr_t path = NLSTR();
 	lstr_t disasm_sym_name = NLSTR();
 
 	lt_arg_iterator_t arg_it = lt_arg_iterator_create(argc, argv);
@@ -75,16 +75,16 @@ int main(int argc, char** argv) {
 			continue;
 		}
 
-		if (path)
+		if (path.str)
 			lt_ferrf("too many input files provided\n");
-		path = *arg_it.it;
+		path = lt_lstr_from_cstr(*arg_it.it);
 	}
 
-	if (!path)
+	if (!path.str)
 		lt_ferrf("no input file provided\n");
 
 	lstr_t file;
-	if (!lt_file_read_entire(path, &file, alloc))
+	if (lt_file_read_entire(path, &file, alloc) != LT_SUCCESS)
 		lt_ferrf("%s: failed to read file\n", path);
 
 	if (!lt_elf_verify_magic(file.str))

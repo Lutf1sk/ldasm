@@ -1,5 +1,4 @@
-/**/*.deps
-/**/*.o
+/bin
 gmon.out
 ldasm
 out
