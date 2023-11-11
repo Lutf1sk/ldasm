@@ -77,14 +77,14 @@ int main(int argc, char** argv) {
 
 		if (path.str)
 			lt_ferrf("too many input files provided\n");
-		path = lt_lstr_from_cstr(*arg_it.it);
+		path = lt_lsfroms(*arg_it.it);
 	}
 
 	if (!path.str)
 		lt_ferrf("no input file provided\n");
 
 	lstr_t file;
-	if (lt_file_read_entire(path, &file, alloc) != LT_SUCCESS)
+	if (lt_freadallp(path, &file, alloc) != LT_SUCCESS)
 		lt_ferrf("%s: failed to read file\n", path);
 
 	if (!lt_elf_verify_magic(file.str))
@@ -107,7 +107,7 @@ int main(int argc, char** argv) {
 		lstr_t name = getstr(shstrtab, sh->name_stab_offs);
 		switch (sh->type) {
 		case LT_ELF_SH_STRTAB:
-			if (lt_lstr_eq(name, CLSTR(".strtab")))
+			if (lt_lseq(name, CLSTR(".strtab")))
 				strtab = getoffs(fh, sh->offset);
 			break;
 		case LT_ELF_SH_SYMTAB:
@@ -125,7 +125,7 @@ int main(int argc, char** argv) {
 			lt_elf64_sh_t* sh = getsh64(fh, sym[i].section);
 			lstr_t name = getstr(strtab, sym[i].name_stab_offs);
 
-			if (lt_lstr_eq(name, disasm_sym_name)) {
+			if (lt_lseq(name, disasm_sym_name)) {
 				usz offs = vaddr_to_offs(fh, sym[i].value);
 				if (fh->obj_type == LT_ELFTYPE_REL)
 					offs += sh->offset;
